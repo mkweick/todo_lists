@@ -3,6 +3,7 @@
     <h4>You have no lists, create one!</h4>
   </div>
 <% end %>
+
 <ul id="lists">
   <% @lists.each_with_index do |list, idx| %>
     <li <%= 'class="complete"' if todos?(list) && all_todos_completed?(list) %>>
@@ -13,3 +14,7 @@
     </li>
   <% end %>
 </ul>
+
+<% content_for :header_links do %>
+  <a href="/lists/new" class="add">New List</a>
+<% end %>

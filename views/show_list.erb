@@ -1,5 +1,4 @@
-<section id="todos" <%= 'class="complete"' if todos?(@list) && 
-                                              all_todos_completed?(@list) %>>
+<section id="todos" class="<%= list_complete?(@list) %>">
   <header>
     <h2><%= @list[:name] %></h2>
     <ul>
@@ -19,6 +18,7 @@
       </li>
     </ul>
   </header>
+  
   <ul>
     <% if @todos.any? %>
       <% @todos.each do |todo| %>  
@@ -43,6 +43,7 @@
     <% end %>
   </ul>
 </section>
+
 <form action="/lists/<%= @slug_list_num %>/todos" method="post">
   <dl>
     <dt>
@@ -59,3 +60,7 @@
     </fieldset>
   </dl>
 </form>
+
+<% content_for :header_links do %>
+  <a href="/lists" class="list">All Lists</a>
+<% end %>

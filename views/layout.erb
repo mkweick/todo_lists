@@ -10,16 +10,9 @@
   <body>
     <header>
       <h1>Todo Tracker</h1>
-      <% if @nav_item %>
-        <div class="actions">
-          <% case @nav_item %>
-          <% when "new_list" %>
-            <a href="/lists/new" class="add">New List</a>
-          <% when "all_lists" %>
-            <a href="/lists" class="list">All Lists</a>
-          <% end %>
-        </div>
-      <% end %>
+      <div class="actions">
+        <%= yield_content :header_links %>
+      </div>
     </header>
     <main>
       <% if session[:flash].any? %>

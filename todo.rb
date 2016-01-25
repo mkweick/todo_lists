@@ -1,4 +1,5 @@
 require 'sinatra'
+require 'sinatra/contrib'
 require 'sinatra/reloader'
 require 'tilt/erubis'
 
@@ -24,12 +25,16 @@ helpers do
     todo[:completed]
   end
 
-  def all_todos_completed?(list)
-    list[:todos].all? { |todo| todo[:completed] }
+  def list_complete?(list)
+    'complete' if todos?(list) && all_todos_completed?(list)
   end
 
   def todos?(list)
     list[:todos].any?
+  end
+
+  def all_todos_completed?(list)
+    list[:todos].all? { |todo| todo[:completed] }
   end
 
   def todos_completed(list)
