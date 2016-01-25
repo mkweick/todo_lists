@@ -4,14 +4,30 @@
     <title>Todo App</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=PT+Sans">
-    <link rel="stylesheet" href="stylesheets/whitespace-reset.css">
-    <link rel="stylesheet" href="stylesheets/application.css">
+    <link rel="stylesheet" href="/stylesheets/whitespace-reset.css">
+    <link rel="stylesheet" href="/stylesheets/application.css">
   </head>
   <body>
     <header>
       <h1>Todo Tracker</h1>
+      <% if @nav_item %>
+        <div class="actions">
+          <% case @nav_item %>
+          <% when "new_list" %>
+            <a href="/lists/new" class="add">New List</a>
+          <% when "all_lists" %>
+            <a href="/lists" class="list">All Lists</a>
+          <% end %>
+        </div>
+      <% end %>
     </header>
     <main>
+      <% if session[:flash].any? %>
+        <% msg = session[:flash].delete_at(0) %>
+        <div class="<%= flash_message_type(msg[:type]) %>">
+          <p><%= msg[:text] %></p>
+        </div>
+      <% end %>
       <%= yield %>
     </main>
   </body>

@@ -1,0 +1,61 @@
+<section id="todos" <%= 'class="complete"' if todos?(@list) && 
+                                              all_todos_completed?(@list) %>>
+  <header>
+    <h2><%= @list[:name] %></h2>
+    <ul>
+      <% if todos?(@list) %>
+        <li>
+          <form action="/lists/<%= @slug_list_num %>/complete_all" method="post">
+            <button type="submit" class="check">
+              Complete All
+            </button>
+          </form>
+        </li>
+      <% end %>
+      <li>
+        <a href="/lists/<%= @slug_list_num %>/edit" class="edit">
+          Edit List
+        </a>
+      </li>
+    </ul>
+  </header>
+  <ul>
+    <% if @todos.any? %>
+      <% @todos.each do |todo| %>  
+        <% todo_num = todo.first %>
+        <li <%= 'class="complete"' if completed?(todo.last) %>>
+          <form action="/lists/<%= @slug_list_num %>/todos/<%= todo_num %>" 
+                method="post" class="check">
+            <input type="hidden" name="completed" 
+                   value="<%= completed?(todo.last) ? "false" : "true" %>" />
+            <button type="submit">Complete</button>
+          </form>
+          <h3><%= todo.last[:name] %></h3>
+          <form action="/lists/<%= @slug_list_num %>/todos/<%= todo_num %>/destroy" 
+                method="post" class="delete">
+            <button type="submit">Delete</button>
+          </form>
+        </li>
+      <% end %>
+    <% else %>
+      <br/>
+      You have no todos yet!
+    <% end %>
+  </ul>
+</section>
+<form action="/lists/<%= @slug_list_num %>/todos" method="post">
+  <dl>
+    <dt>
+      <label for="todo_name">
+        Enter a new todo item:
+      </label>
+    </dt>
+    <dd>
+      <input type="text" name="todo_name" id="todo_name" maxlength="100" 
+             placeholder="Something to do..." autofocus />
+    </dd>
+    <fieldset class="actions">
+      <input type="submit" value="Add" />
+    </fieldset>
+  </dl>
+</form>

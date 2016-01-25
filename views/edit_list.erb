@@ -1,0 +1,31 @@
+<section id="todos">
+  <header>
+    <h2>Editing '<%= @list[:name] %>'</h2>
+    <ul>
+      <li>
+        <form action="/lists/<%= @slug_list_num %>/destroy" method="post">
+          <button type="submit" class="delete">
+            Delete List
+          </button>
+        </form>
+      </li>
+    </ul>
+  </header>
+</section>
+<form action="/lists/<%= @slug_list_num %>" method="post">
+  <dl>
+    <dt>
+      <label for="list_name">
+        Enter the new name for the list:
+      </label>
+    </dt>
+    <dd>
+      <input type="text" name="list_name" id="list_name" placeholder="List Name" 
+             value="<%= @list[:name] %>"maxlength="50" autofocus />
+    </dd>
+    <fieldset class="actions">
+      <input type="submit" value="Update" />
+      <a href="/lists/<%= @slug_list_num %>">Cancel</a>
+    </fieldset>
+  </dl>
+</form>

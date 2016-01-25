@@ -97,6 +97,11 @@ form input[type="text"] {
   box-sizing: border-box; 
 }
 
+form input[type="text"]:focus {
+  outline: 0px;
+  box-shadow: 0 0 0 1pt #1a74ff;
+}
+
 form input[type="submit"] {
   padding: 12px 45px;
   margin: 0 40px 0 0;
@@ -203,12 +208,12 @@ form fieldset.actions a:hover {
 
 #lists h2 {
   display: inline-block;
-  width: 95%; 
+  width: 90%; 
 }
 
 #lists p {
   display: inline-block;
-  width: 5%;
+  width: 9%;
   font-size: 0.9em;
   text-align: right;
   color: #666666; 

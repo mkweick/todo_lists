@@ -1,0 +1,15 @@
+<% if @lists.none? %>
+  <div id="no_list">
+    <h4>You have no lists, create one!</h4>
+  </div>
+<% end %>
+<ul id="lists">
+  <% @lists.each_with_index do |list, idx| %>
+    <li <%= 'class="complete"' if todos?(list) && all_todos_completed?(list) %>>
+      <a href="/lists/<%= idx + 1 %>">
+        <h2><%= list[:name] %></h2>
+        <p><%= "#{todos_completed(list)}/#{list[:todos].size}" %></p>
+      </a>
+    </li>
+  <% end %>
+</ul>
