@@ -129,7 +129,7 @@ post '/lists/:id' do
   @slug_list_num = params[:id]
   list_num = @slug_list_num.to_i - 1
   list_name = capitalize(params[:list_name])
-  
+
   error = error_for_list_name(list_name)
   if error
     @list = session[:lists][list_num]
@@ -187,7 +187,7 @@ post '/lists/:list_id/todos/:id' do
   list_num = slug_list_num.to_i - 1
   list = session[:lists][list_num]
   todo_num = params[:id].to_i - 1
-  
+
   completed_value = params[:completed] == 'true'
   list[:todos][todo_num][:completed] = completed_value
   redirect "/lists/#{slug_list_num}"
