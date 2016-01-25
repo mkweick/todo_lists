@@ -1,5 +1,5 @@
 require 'sinatra'
-require 'sinatra/contrib'
+require 'sinatra/content_for'
 require 'sinatra/reloader'
 require 'tilt/erubis'
 
@@ -29,6 +29,13 @@ helpers do
     'complete' if list_complete?(list)
   end
 
+  def sort_lists(lists)
+    completed, incomplete = lists.partition { |list| list_complete?(list) }
+
+    incomplete.each { |list| yield list, lists.index(list) + 1 }
+    completed.each { |list| yield list, lists.index(list) + 1 }
+  end
+
   def todo_class(todo)
     'complete' if todo[:completed]
   end
@@ -44,6 +51,13 @@ helpers do
   def todos_completed(list)
     list[:todos].count { |todo| todo[:completed] }
   end
+
+  def sort_todos(todos)
+    completed, incomplete = todos.partition { |todo| todo[:completed] }
+
+    incomplete.each { |todo| yield todo, todos.index(todo) + 1 }
+    completed.each { |todo| yield todo, todos.index(todo) + 1 }
+  end
 end
 
 before do
@@ -57,7 +71,6 @@ end
 
 # Index lists
 get '/lists/?' do
-  @nav_item = 'new_list'
   @lists = session[:lists]
   erb :lists
 end
@@ -94,20 +107,12 @@ end
 
 # Show list
 get '/lists/:id' do
-  @nav_item = 'all_lists'
   @slug_list_num = params[:id]
   list_num = @slug_list_num.to_i - 1
   @list = session[:lists][list_num] if list_num >= 0
 
   if @list
-    @todos = []
-    session[:lists][list_num][:todos].each_with_index do |todo, idx|
-      if todo[:completed]
-        @todos.push([idx + 1, todo])
-      else
-        @todos.unshift([idx + 1, todo])
-      end
-    end
+    @todos = @list[:todos]
     erb :show_list
   else
     session[:flash] << { type: 'error', text: "List ##{@slug_list_num} "\
@@ -161,6 +166,7 @@ post '/lists/:id/complete_all' do
   list = session[:lists][list_num]
 
   list[:todos].each { |todo| todo[:completed] = true }
+  session[:flash] << { type: 'success', text: 'All todos marked completed' }
   redirect "/lists/#{slug_list_num}"
 end
 

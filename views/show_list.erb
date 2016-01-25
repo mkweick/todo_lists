@@ -21,9 +21,7 @@
   
   <ul>
     <% if @todos.any? %>
-      <% @todos.each do |t| %>  
-        <% todo_num = t.first %>
-        <% todo = t.last %>
+      <% sort_todos(@todos) do |todo, todo_num| %>  
         <li class="<%= todo_class(todo) %>">
           <form action="/lists/<%= @slug_list_num %>/todos/<%= todo_num %>" 
                 method="post" class="check">
