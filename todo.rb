@@ -122,19 +122,20 @@ end
 
 # Update list
 post '/lists/:id' do
-  slug_list_num = params[:id]
-  list_num = slug_list_num.to_i - 1
+  @slug_list_num = params[:id]
+  list_num = @slug_list_num.to_i - 1
   list_name = capitalize(params[:list_name])
+  
   error = error_for_list_name(list_name)
-
   if error
+    @list = session[:lists][list_num]
     session[:flash] << error
-    redirect "/lists/#{slug_list_num}/edit"
+    erb :edit_list
   else
     session[:lists][list_num][:name] = list_name
     session[:flash] << { type: 'success', text: 'List name successfully '\
                                                 'updated.' }
-    redirect "/lists/#{slug_list_num}"
+    redirect "/lists/#{@slug_list_num}"
   end
 end
 

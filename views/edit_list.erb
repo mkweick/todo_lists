@@ -21,7 +21,7 @@
     </dt>
     <dd>
       <input type="text" name="list_name" id="list_name" maxlength="50" 
-             value="<%= @list[:name] %>" autofocus />
+             value="<%= params[:list_name] || @list[:name] %>" autofocus />
     </dd>
     <fieldset class="actions">
       <input type="submit" value="Update" />
