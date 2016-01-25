@@ -21,12 +21,16 @@ helpers do
     end
   end
 
-  def completed?(todo)
-    todo[:completed]
+  def list_complete?(list)
+    todos?(list) && all_todos_completed?(list)
   end
 
-  def list_complete?(list)
-    'complete' if todos?(list) && all_todos_completed?(list)
+  def list_class(list)
+    'complete' if list_complete?(list)
+  end
+
+  def todo_class(todo)
+    'complete' if todo[:completed]
   end
 
   def todos?(list)
@@ -181,10 +185,11 @@ end
 post '/lists/:list_id/todos/:id' do
   slug_list_num = params[:list_id]
   list_num = slug_list_num.to_i - 1
+  list = session[:lists][list_num]
   todo_num = params[:id].to_i - 1
-  completed_value = params[:completed] == 'true' ? true : false
-
-  session[:lists][list_num][:todos][todo_num][:completed] = completed_value
+  
+  completed_value = params[:completed] == 'true'
+  list[:todos][todo_num][:completed] = completed_value
   redirect "/lists/#{slug_list_num}"
 end
 
