@@ -6,6 +6,7 @@ require 'tilt/erubis'
 configure do
   enable :sessions
   set :session_secret, 'N23JK4H93F78B349IF7UB34'
+  set :erb, escape_html: true
 end
 
 def capitalize(text)
@@ -105,27 +106,31 @@ post '/lists' do
   end
 end
 
+# Return list if valid list. Else redirect to lists and display flash error.
+def load_list(list_num)
+  list = session[:lists][list_num] if list_num && list_num >= 0
+  return list if list
+
+  session[:flash] << { type: 'error', text: 'The specified list was '\
+                                            'not found.' }
+  redirect '/lists'
+  halt
+end
+
 # Show list
 get '/lists/:id' do
   @slug_list_num = params[:id]
   list_num = @slug_list_num.to_i - 1
-  @list = session[:lists][list_num] if list_num >= 0
-
-  if @list
-    @todos = @list[:todos]
-    erb :show_list
-  else
-    session[:flash] << { type: 'error', text: "List ##{@slug_list_num} "\
-                                              "doesn't exist." }
-    redirect '/lists'
-  end
+  @list = load_list(list_num)
+  @todos = @list[:todos]
+  erb :show_list
 end
 
 # Edit list
 get '/lists/:id/edit' do
   @slug_list_num = params[:id]
   list_num = @slug_list_num.to_i - 1
-  @list = session[:lists][list_num]
+  @list = load_list(list_num)
   erb :edit_list
 end
 
@@ -133,11 +138,11 @@ end
 post '/lists/:id' do
   @slug_list_num = params[:id]
   list_num = @slug_list_num.to_i - 1
-  list_name = capitalize(params[:list_name])
+  @list = load_list(list_num)
 
+  list_name = capitalize(params[:list_name])
   error = error_for_list_name(list_name)
   if error
-    @list = session[:lists][list_num]
     session[:flash] << error
     erb :edit_list
   else
@@ -151,10 +156,10 @@ end
 # Destroy list
 post '/lists/:id/destroy' do
   list_num = params[:id].to_i - 1
-  list_name = session[:lists][list_num][:name]
+  list = load_list(list_num)
 
   session[:lists].delete_at(list_num)
-  session[:flash] << { type: 'success', text: "List '#{list_name}' has "\
+  session[:flash] << { type: 'success', text: "List '#{list[:name]}' has "\
                                               'been removed.' }
   redirect '/lists'
 end
@@ -163,7 +168,7 @@ end
 post '/lists/:id/complete_all' do
   slug_list_num = params[:id]
   list_num = slug_list_num.to_i - 1
-  list = session[:lists][list_num]
+  list = load_list(list_num)
 
   list[:todos].each { |todo| todo[:completed] = true }
   session[:flash] << { type: 'success', text: 'All todos marked completed' }
@@ -174,10 +179,11 @@ end
 post '/lists/:id/todos' do
   slug_list_num = params[:id]
   list_num = slug_list_num.to_i - 1
-  todo_name = params[:todo_name].strip
+  list = load_list(list_num)
 
+  todo_name = params[:todo_name].strip
   if (1..100).cover?(todo_name.length)
-    session[:lists][list_num][:todos] << { name: todo_name, complete: false }
+    list[:todos] << { name: todo_name, complete: false }
     session[:flash] << { type: 'success', text: "Todo '#{todo_name}' has "\
                                                 'been added.' }
   else
@@ -191,7 +197,7 @@ end
 post '/lists/:list_id/todos/:id' do
   slug_list_num = params[:list_id]
   list_num = slug_list_num.to_i - 1
-  list = session[:lists][list_num]
+  list = load_list(list_num)
   todo_num = params[:id].to_i - 1
 
   completed_value = params[:completed] == 'true'
@@ -203,8 +209,9 @@ end
 post '/lists/:list_id/todos/:id/destroy' do
   slug_list_num = params[:list_id]
   list_num = slug_list_num.to_i - 1
+  list = load_list(list_num)
   todo_num = params[:id].to_i - 1
-  todo_name = session[:lists][list_num][:todos][todo_num][:name]
+  todo_name = list[:todos][todo_num][:name]
 
   session[:lists][list_num][:todos].delete_at(todo_num)
   session[:flash] << { type: 'success', text: "Todo '#{todo_name}' has "\
