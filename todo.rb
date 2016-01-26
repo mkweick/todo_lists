@@ -211,7 +211,6 @@ post '/lists/:list_id/todos/:id/destroy' do
   list_num = slug_list_num.to_i - 1
   list = load_list(list_num)
   todo_num = params[:id].to_i - 1
-  todo_name = list[:todos][todo_num][:name]
 
-  session[:lists][list_num][:todos].delete_at(todo_num)
+  list[:todos].delete_at(todo_num)
 end
