@@ -214,7 +214,4 @@ post '/lists/:list_id/todos/:id/destroy' do
   todo_name = list[:todos][todo_num][:name]
 
   session[:lists][list_num][:todos].delete_at(todo_num)
-  session[:flash] << { type: 'success', text: "Todo '#{todo_name}' has "\
-                                              'been removed.' }
-  redirect "/lists/#{slug_list_num}"
 end
